@@ -2,22 +2,16 @@
 <html>
 
 <head>
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible">
 	<title>Fight Sim</title>
-	<link rel="stylesheet" type="text/css" media="screen" href="">
-
-	<!-- tells web browser to asyncrounsly start downloading script.-->
-	<!-- waits until body done parsing to execute it.-->
-	<!-- don't need to use window.onload, dom content event-->
-	<script src="learning.js" defer></script>
-
 </head>
 
-<body>
+<body onload="InitDemo()">
 	<h1> Fight Sim </h1>
-	<canvas></canvas>
+	<canvas id="game-surface" width="800" height="600">
+		Your browser does not support HTML5
+	</canvas>
 
+	<script src="scripts/tutorialcode.js"></script>
 </body>
 
 </html>

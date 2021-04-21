@@ -1,10 +1,21 @@
-const canvas = document.querySelector('canvas');
-// getting context
-const gl = canvas.getContext('webgl');
 
-if (!gl) {
-	throw new Error('WebGL not supported :(');
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // 1. vertexData = [...];
@@ -16,19 +27,24 @@ if (!gl) {
 // 7. attach shaders to program
 // 8. enable vertex attributes we want to use
 // 9. draw
-
-
+/************************************************************************************************/
+/************************************ FROM FIRST TUTORIAL ***************************************/
+/************************************************************************************************/
+/*
+const canvas = document.querySelector('canvas');
+// getting context
+const gl = canvas.getContext('webgl');
 // 1. vertexData = [...];
 const vertexData = [
-	0, 1, 0,
-	1, -1, 0,
-	-1, -1, 0,
+    0, 1, 0,
+    1, -1, 0,
+    -1, -1, 0,
 ];
 
 const colorData = [
-	0, 0, 1,	// V1.color (red)
-	0, 1, 1,	// V2.color (green)
-	0, 0, 1,	// V3.color (blue)
+    0, 0, 1,	// V1.color (red)
+    0, 1, 1,	// V2.color (green)
+    0, 0, 1,	// V3.color (blue)
 ];
 
 // 2. create buffer
@@ -51,7 +67,7 @@ attribute vec3 color;
 varying vec3 vColor;
 
 void main() {
-	vColor = color;
+    vColor = color;
     gl_Position = vec4(position, 1);
 }
 `);
@@ -92,3 +108,5 @@ gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
 // 9. draw
 gl.useProgram(program);
 gl.drawArrays(gl.TRIANGLES, 0, 3);
+*/
+/************************************************************************************************/
