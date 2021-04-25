@@ -2,14 +2,17 @@ var vertextShaderText =
 	[
 		'precision mediump float;',
 		'',
-		'attribute vec2 vertPosition;',
+		'attribute vec3 vertPosition;',
 		'attribute vec3 vertColor;',
 		'varying vec3 fragColor;',
+		'uniform mat4 mWorld;', // world matrix
+		'uniform mat4 mView;', // view matrix
+		'uniform mat4 mProj;', // projection matrix
 		'',
 		'void main()',
 		'{',
 		'	fragColor = vertColor;',
-		'	gl_Position = vec4(vertPosition, 0.0, 1.0);',
+		'	gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);',
 		'}'
 	].join('\n');
 
@@ -80,9 +83,9 @@ function InitDemo() {
 	// create vertex buffer
 	var triangleVertices =
 		[	// X, Y			R, G, B
-			0.0, 0.5, 		1.0, 1.0, 0.0,
-			-0.5, -0.5, 	0.7, 0.0, 1.0,
-			0.5, -0.5,		0.1, 1.0, 0.6
+			0.0, 0.5, 0.0, 		1.0, 1.0, 0.0,
+			-0.5, -0.5, 0.0,	0.7, 0.0, 1.0,
+			0.5, -0.5, 0.0,		0.1, 1.0, 0.6
 		];
 
 	var triangleVertexBufferObject = gl.createBuffer();
@@ -93,10 +96,10 @@ function InitDemo() {
 	var colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
 	gl.vertexAttribPointer(
 		positionAttribLocation, //Attribute location
-		2, // Number of elements per attribute
+		3, // Number of elements per attribute
 		gl.FLOAT, // Type of elements
 		gl.FALSE, // Is data normalized
-		5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+		6 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
 		0, // Offset from the beginning of asingle vertex to this attribute
 	);
 	gl.vertexAttribPointer(
@@ -104,13 +107,32 @@ function InitDemo() {
 		3, // Number of elements per attribute
 		gl.FLOAT, // Type of elements
 		gl.FALSE, // Is data normalized
-		5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-		2 * Float32Array.BYTES_PER_ELEMENT, // Offset from the beginning of asingle vertex to this attribute
+		6 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+		3 * Float32Array.BYTES_PER_ELEMENT, // Offset from the beginning of asingle vertex to this attribute
 	);
 
 	gl.enableVertexAttribArray(positionAttribLocation);
 	gl.enableVertexAttribArray(colorAttribLocation);
 	// create fragment buffer
+
+	// TRell OpenGL State machine which program should be active
+	gl.useProgram(program);
+
+	var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
+	var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
+	var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+
+	var worldMatrix = new Float32Array(16);
+	var viewMatrix = new Float32Array(16);
+	var projMatrix = new Float32Array(16);
+	glMatrix.mat4.identity(worldMatrix);
+	glMatrix.mat4.lookAt(viewMatrix, [0, 0, -5], [0, 0, 0], [0, 1, 0]);
+	glMatrix.mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 1000.0);
+
+	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix); // must always be false for WebGL. Sets tranpose (does not work for WebGL)
+	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+
 
 	/* TYPICAL JAVASCRIPT GAME LOOP
 	var loop = function () {
@@ -123,7 +145,7 @@ function InitDemo() {
 	requestAnimationFrame(loop)
 	*/
 	// MAIN RENDER LOOP
-	gl.useProgram(program);
+	
 	gl.drawArrays(gl.TRIANGLES, 0, 3); // way to draw, which ones to skip, how many vertices to draw
 
 
