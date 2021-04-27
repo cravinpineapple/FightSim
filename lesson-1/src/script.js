@@ -22,6 +22,7 @@ const scene = new THREE.Scene();
 // Objects
 // basically geometry/shape of something
 const geometry = new THREE.SphereBufferGeometry(0.5, 64, 64);
+// geometry.position(0, 0, 0);
 
 // Materials
 // "clothing" if you will
@@ -51,9 +52,9 @@ scene.add(pointLight);
 // LIGHT 2
  
 // adding second light with color
-const pointLight2 = new THREE.PointLight(0xff0000, 2);
+const pointLight2 = new THREE.PointLight(0xFF00FF, 2);
 pointLight2.position.set(-0.04, -0.93, 0.69); // x, y, z
-pointLight2.intensity = 10;
+pointLight2.intensity = 2;
 scene.add(pointLight2);
 
 // const light1 = gui.addFolder('Light 1');
@@ -69,7 +70,7 @@ scene.add(pointLight2);
 // LIGHT 3
 const pointLight3 = new THREE.PointLight(0x7cc8ed, 2);
 pointLight3.position.set(-1.45, 0.66, 0.4); // x, y, z
-pointLight3.intensity = 2.58;
+pointLight3.intensity = 3;
 scene.add(pointLight3);
 
 // const light2 = gui.addFolder('Light 2');
@@ -151,11 +152,17 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 // changes the movement of the object when moving it
 document.addEventListener('mousemove', onDocumentMouseMove);
+document.addEventListener('keydown', onDocumentKeyDown);
 
 let mouseX = 0;
 let mouseY = 0;
 let targetX = 0;
 let targetY = 0;
+let keyX = 0;
+let keyY = 0;
+let targetKeyX = sphere.position.x;
+let targetKeyY = sphere.position.y;
+
 
 const windowHalfX = window.innerWidth / 2;
 const windowHalfY = window.innerHeight / 2;
@@ -163,6 +170,17 @@ const windowHalfY = window.innerHeight / 2;
 function onDocumentMouseMove(event) {
     mouseX = (event.clientX - windowHalfX);
     mouseY = (event.clientY - windowHalfY);
+}
+
+function onDocumentKeyDown(event) {
+    if (event.key == 'w')
+        keyY += 1;
+    if (event.key == 's')
+        keyY += -1;
+    if (event.key == 'a')
+        keyX -= 1;
+    if (event.key == 'd')
+        keyX += 1;
 }
 
 function updateSphere(event) {
@@ -178,17 +196,21 @@ const tick = () =>
 {
     targetX = mouseX * 0.0025;
     targetY = mouseY * 0.0025;
-
+    targetKeyX = keyX * 0.025;
+    targetKeyY = keyY * 0.025;
 
     const elapsedTime = clock.getElapsedTime()
 
     // Update objects
     sphere.rotation.y = 0.6 * elapsedTime
 
+    
     sphere.rotation.y += 0.5 * (targetX - sphere.rotation.y);
     sphere.rotation.x += 0.05 * (targetY - sphere.rotation.x);
-    sphere.position.z += -0.05 * (targetY - sphere.rotation.x);
-    sphere.material.opacity = 1.5 * (Math.abs(targetY));
+    sphere.position.z += 0.05 * (targetY);
+    sphere.position.x += targetKeyX;
+    sphere.position.y += targetKeyY;
+    sphere.material.opacity = 1.5 * (Math.abs(targetX));
 
     // Update Orbital Controls
     // controls.update()
