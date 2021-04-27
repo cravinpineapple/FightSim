@@ -126,8 +126,8 @@ function InitDemo() {
 	var viewMatrix = new Float32Array(16);
 	var projMatrix = new Float32Array(16);
 	glMatrix.mat4.identity(worldMatrix);
-	glMatrix.mat4.lookAt(viewMatrix, [0, 0, -5], [0, 0, 0], [0, 1, 0]);
-	glMatrix.mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 1000.0);
+	glMatrix.mat4.lookAt(viewMatrix, [0, 0, -2], [0, 0, 0], [0, 1, 0]);
+	glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 1000.0);
 
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix); // must always be false for WebGL. Sets tranpose (does not work for WebGL)
 	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
@@ -144,9 +144,28 @@ function InitDemo() {
 	}
 	requestAnimationFrame(loop)
 	*/
+	//
 	// MAIN RENDER LOOP
-	
-	gl.drawArrays(gl.TRIANGLES, 0, 3); // way to draw, which ones to skip, how many vertices to draw
+	//
 
+	// not a good idea to declare variables inside of loop
+	//		(memory allocation takes a bit)
+	var angle = 0;
+	var identityMatrix = new Float32Array(16);
+	glMatrix.mat4.identity(identityMatrix);
+	function loop () {
+		// rotation
+		angle = performance.now() / 1000 / 3 * 2 * Math.PI;
+		glMatrix.mat4.rotate(worldMatrix, identityMatrix, angle, [0, 1, 0]); // output, about, angle of degrees, axis to change
+		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+		
+		gl.clear(0.75, 0.85, 0.8, 1.0);
+		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+		gl.drawArrays(gl.TRIANGLES, 0, 3); // way to draw, which ones to skip, how many vertices to draw
 
+		// request animation frame called when screen ready to draw new image (every 1/60 of a second)
+		requestAnimationFrame(loop);
+	}
+
+	requestAnimationFrame(loop);
 }
