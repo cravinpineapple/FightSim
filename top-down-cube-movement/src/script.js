@@ -13,23 +13,36 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 // Objects
-const geometry = new THREE.TorusGeometry( .7, .2, 16, 100 );
+const geometry = new THREE.BoxGeometry(250, 250, 250);
 
 // Materials
 
 const material = new THREE.MeshBasicMaterial()
 material.color = new THREE.Color(0xff0000)
+material.
 
 // Mesh
 const sphere = new THREE.Mesh(geometry,material)
+const testObj1 = gui.addFolder('Test Obj 1');
+
+sphere.position.x = 0;
+sphere.position.y = 0;
+sphere.position.z = -250;
+
+testObj1.add(sphere.position, 'x').min(-6).max(6).step(0.01);
+testObj1.add(sphere.position, 'y').min(-3).max(3).step(0.01);
+testObj1.add(sphere.position, 'z').step(2);
+
+// const pointLightHelper = new THREE.PointLightHelper(pointLight2, 0.3);
+// scene.add(pointLightHelper);
 scene.add(sphere)
 
 // Lights
 
 const pointLight = new THREE.PointLight(0xffffff, 0.1)
-pointLight.position.x = 2
-pointLight.position.y = 3
-pointLight.position.z = 4
+pointLight.position.x = 0
+pointLight.position.y = 2
+pointLight.position.z = 40
 scene.add(pointLight)
 
 /**
@@ -58,11 +71,18 @@ window.addEventListener('resize', () =>
 /**
  * Camera
  */
+
+const viewSize = 900;
+const aspectRatio = canvas.width / canvas.height;
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 0
-camera.position.y = 0
-camera.position.z = 2
+const camera = new THREE.OrthographicCamera(-aspectRatio * viewSize / 2, aspectRatio * viewSize / 2, viewSize / 2, -viewSize / 2, 1, 1000 );//(500, 500, 500, 500, -300, 1000 );
+camera.position.set(0, 0, 0);
+
+const orthCam1 = gui.addFolder('Orth Cam 1');
+
+orthCam1.add(camera.position, 'x').step(0.5);
+orthCam1.add(camera.position, 'y').step(0.5);
+orthCam1.add(camera.position, 'z').step(0.5);
 scene.add(camera)
 
 // Controls
@@ -73,7 +93,7 @@ scene.add(camera)
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
+    canvas: canvas, alpha: true,
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -90,7 +110,7 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
 
     // Update objects
-    sphere.rotation.y = .5 * elapsedTime
+    // sphere.rotation.y = .5 * elapsedTime
 
     // Update Orbital Controls
     // controls.update()
